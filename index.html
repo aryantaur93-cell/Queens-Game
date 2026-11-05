@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Queens Game - Minimalist</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game-app-container">
+
+    <!-- ================= 1. MAIN MENU SCREEN ================= -->
+    <section id="screen-menu" class="screen active">
+      <div class="menu-card">
+        <div class="menu-header">
+          <h1 class="game-logo">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"></path>
+            </svg>
+            QUEENS
+          </h1>
+          <p>N-Queens Logic Puzzle</p>
+        </div>
+
+        <div class="menu-buttons">
+          <button id="btn-menu-new-game" class="btn-primary">New Game</button>
+          <button id="btn-menu-quit" class="btn-secondary">Quit Game</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 2. NEW GAME SETUP SCREEN ================= -->
+    <section id="screen-setup" class="screen">
+      <div class="menu-card">
+        <div class="menu-header">
+          <h2 style="font-size: 1.5rem; font-weight: 800; letter-spacing: 0.04em;">Game Setup</h2>
+          <p>Configure Queens & Difficulty</p>
+        </div>
+
+        <div class="setup-form">
+          <!-- 1. Queens Number Input -->
+          <div class="form-group">
+            <label class="form-label">Number of Queens (N)</label>
+            <div class="input-queens-wrapper">
+              <input type="number" id="input-queens-count" class="queens-number-input" min="4" max="16" value="8">
+              <div class="quick-chips">
+                <button type="button" class="chip-btn" data-n="4">4</button>
+                <button type="button" class="chip-btn" data-n="6">6</button>
+                <button type="button" class="chip-btn active" data-n="8">8</button>
+                <button type="button" class="chip-btn" data-n="10">10</button>
+                <button type="button" class="chip-btn" data-n="12">12</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Difficulty Level Selector -->
+          <div class="form-group">
+            <label class="form-label">Select Level</label>
+            <div class="difficulty-selector">
+              <!-- Easy -->
+              <div class="diff-card selected" data-level="easy">
+                <div class="diff-info">
+                  <h4>Easy</h4>
+                  <p>Threat zones visible, assists enabled</p>
+                </div>
+                <div class="diff-indicator"></div>
+              </div>
+
+              <!-- Medium -->
+              <div class="diff-card" data-level="medium">
+                <div class="diff-info">
+                  <h4>Medium</h4>
+                  <p>Standard N-Queens rules with conflict warnings</p>
+                </div>
+                <div class="diff-indicator"></div>
+              </div>
+
+              <!-- Intermediate -->
+              <div class="diff-card" data-level="intermediate">
+                <div class="diff-info">
+                  <h4>Intermediate</h4>
+                  <p>Pure challenge, no helper zones, high focus</p>
+                </div>
+                <div class="diff-indicator"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <button id="btn-start-game" class="btn-primary" style="margin-top: 6px;">Start Game</button>
+          <button id="btn-setup-back" class="btn-secondary">Back to Menu</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 3. IN-GAME BOARD SCREEN ================= -->
+    <section id="screen-game" class="screen">
+      <div class="game-board-layout">
+        <!-- Top Status Bar -->
+        <header class="game-top-bar">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <button id="btn-game-to-menu" class="btn-menu-back">← Menu</button>
+            <span id="game-level-tag" class="level-tag">MEDIUM</span>
+          </div>
+
+          <div class="status-stat-group">
+            <div class="stat-item">
+              <span class="lbl">Queens</span>
+              <span class="val"><strong id="stat-queens-placed">0</strong> / <span id="stat-queens-target">8</span></span>
+            </div>
+            <div class="stat-item">
+              <span class="lbl">Moves</span>
+              <span id="stat-moves" class="val">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="lbl">Time</span>
+              <span id="stat-timer" class="val">00:00</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Conflict Info & Notification -->
+        <div class="game-info-banner">
+          <div id="conflict-indicator" class="conflict-alert">
+            <span id="conflict-icon">✓</span>
+            <span id="conflict-label">No Conflicts</span>
+          </div>
+          <div id="game-toast" class="game-toast"></div>
+        </div>
+
+        <!-- Chessboard Container -->
+        <div class="board-container">
+          <!-- Coordinates -->
+          <div id="coords-top" class="coords-x"></div>
+          <div id="coords-left" class="coords-y"></div>
+
+          <!-- Board Inner Grid -->
+          <div class="board-inner">
+            <svg id="laser-svg" class="laser-svg"></svg>
+            <div id="chess-grid" class="chess-grid"></div>
+          </div>
+        </div>
+
+        <!-- Fast In-Game Actions -->
+        <div class="board-actions-bar">
+          <button id="btn-action-hint" class="game-btn">💡 Hint</button>
+          <button id="btn-action-undo" class="game-btn" disabled>↩ Undo</button>
+          <button id="btn-action-mark" class="game-btn">✕ Mark</button>
+          <button id="btn-action-reset" class="game-btn">🔄 Clear</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 4. QUIT SCREEN ================= -->
+    <section id="screen-quit" class="screen">
+      <div class="quit-card">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M15 9l-6 6M9 9l6 6"></path>
+        </svg>
+        <h3>Game Exited</h3>
+        <p>Thank you for playing Queens.<br>Take a break and come back anytime!</p>
+        <button id="btn-quit-return" class="btn-primary">Return to Main Menu</button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ================= WIN CELEBRATION MODAL ================= -->
+  <div id="win-modal" class="win-modal-overlay">
+    <div class="win-card">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+        <path d="M4 22h16"></path>
+        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+      </svg>
+      <h3>PUZZLE SOLVED!</h3>
+      <p>All <span id="win-queens-count">8</span> Queens placed with 0 conflicts.</p>
+
+      <div class="win-stats-row">
+        <div class="win-stat-box">
+          <div class="lbl">TIME</div>
+          <div id="win-stat-time" class="val">01:12</div>
+        </div>
+        <div class="win-stat-box">
+          <div class="lbl">MOVES</div>
+          <div id="win-stat-moves" class="val">14</div>
+        </div>
+      </div>
+
+      <div class="win-buttons">
+        <button id="btn-win-again" class="btn-primary">Play Again</button>
+        <button id="btn-win-menu" class="btn-secondary">Main Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="game.js"></script>
+</body>
+</html>

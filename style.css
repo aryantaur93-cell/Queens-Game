@@ -1,0 +1,728 @@
+/* ==========================================================================
+   QUEENS GAME - MINIMALIST MONOCHROME THEME (BLACK, GREY & WHITE)
+   Pure, clean, distraction-free puzzle game
+   ========================================================================== */
+
+:root {
+  --bg-main: #0c0c0e;
+  --surface: #161618;
+  --surface-secondary: #202024;
+  --border-light: #2c2c32;
+  --border-highlight: #45454f;
+  --text-white: #ffffff;
+  --text-grey: #9a9aa2;
+  --text-muted: #66666e;
+  
+  --tile-light: #2c2c34;
+  --tile-dark: #1a1a20;
+  --tile-hover: #3a3a46;
+  --tile-attacked: rgba(255, 255, 255, 0.08);
+  
+  --queen-color: #ffffff;
+  --conflict-color: #ff4d4d;
+  --mark-color: #888894;
+  
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-main);
+  color: var(--text-white);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 14px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.game-app-container {
+  width: 100%;
+  max-width: 680px;
+  position: relative;
+}
+
+/* ==========================================================================
+   1. MAIN MENU SCREEN
+   ========================================================================== */
+
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.screen.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.menu-card {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 44px 36px;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.menu-header .game-logo {
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--text-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.menu-header p {
+  font-size: 0.85rem;
+  color: var(--text-grey);
+  margin-top: 6px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+/* Standard Buttons */
+.btn-primary {
+  background: #ffffff;
+  color: #0c0c0e;
+  border: 1px solid #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 14px 20px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 0.15s, transform 0.1s;
+  width: 100%;
+}
+
+.btn-primary:hover {
+  background: #e2e2e8;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--surface-secondary);
+  color: var(--text-white);
+  border: 1px solid var(--border-light);
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 13px 20px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  width: 100%;
+}
+
+.btn-secondary:hover {
+  background: #2b2b32;
+  border-color: var(--border-highlight);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   2. NEW GAME SETUP MODAL / SCREEN
+   ========================================================================== */
+
+.setup-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  text-align: left;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.input-queens-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.queens-number-input {
+  width: 80px;
+  padding: 10px 12px;
+  background: var(--bg-main);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-white);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+}
+
+.queens-number-input:focus {
+  border-color: var(--text-white);
+}
+
+.quick-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chip-btn {
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-light);
+  color: var(--text-grey);
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.chip-btn:hover {
+  color: var(--text-white);
+  border-color: var(--border-highlight);
+}
+
+.chip-btn.active {
+  background: #ffffff;
+  color: #0c0c0e;
+  border-color: #ffffff;
+  font-weight: 700;
+}
+
+/* Difficulty Option Cards */
+.difficulty-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.diff-card {
+  background: var(--bg-main);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.diff-card:hover {
+  border-color: var(--border-highlight);
+  background: #121216;
+}
+
+.diff-card.selected {
+  border-color: #ffffff;
+  background: var(--surface-secondary);
+}
+
+.diff-info h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-white);
+}
+
+.diff-info p {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.diff-indicator {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border-highlight);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.diff-card.selected .diff-indicator {
+  border-color: #ffffff;
+  background: #ffffff;
+}
+
+.diff-card.selected .diff-indicator::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0c0c0e;
+}
+
+/* ==========================================================================
+   3. IN-GAME BOARD SCREEN
+   ========================================================================== */
+
+.game-board-layout {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Header Bar */
+.game-top-bar {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.level-tag {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-light);
+  padding: 4px 10px;
+  border-radius: 4px;
+  color: var(--text-grey);
+}
+
+.status-stat-group {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-item .lbl {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-item .val {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-white);
+}
+
+.btn-menu-back {
+  background: transparent;
+  border: 1px solid var(--border-light);
+  color: var(--text-grey);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-menu-back:hover {
+  background: var(--surface-secondary);
+  color: var(--text-white);
+  border-color: var(--border-highlight);
+}
+
+/* Conflict & Queens Banner */
+.game-info-banner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.conflict-alert {
+  color: var(--text-grey);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.conflict-alert.danger {
+  color: var(--conflict-color);
+  font-weight: 700;
+}
+
+.queens-count-text strong {
+  color: var(--text-white);
+}
+
+/* Board Canvas Area */
+.board-container {
+  width: 100%;
+  max-width: 520px;
+  aspect-ratio: 1 / 1;
+  position: relative;
+  background: var(--surface);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+}
+
+.board-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+}
+
+/* Board Coordinates */
+.coords-x {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: 3px;
+  display: flex;
+  pointer-events: none;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.coords-y {
+  position: absolute;
+  top: 20px;
+  bottom: 20px;
+  left: 5px;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.coord-lbl {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The N x N Grid */
+.chess-grid {
+  display: grid;
+  width: 100%;
+  height: 100%;
+}
+
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.1s;
+}
+
+.tile.light { background-color: var(--tile-light); }
+.tile.dark { background-color: var(--tile-dark); }
+.tile:hover { background-color: var(--tile-hover); }
+
+/* Attacked tile highlight */
+.tile.attacked::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--tile-attacked);
+  pointer-events: none;
+}
+
+.tile.hint-pulse {
+  background-color: #ffffff !important;
+  animation: pulseWhite 0.8s infinite alternate;
+}
+
+@keyframes pulseWhite {
+  from { opacity: 0.5; }
+  to { opacity: 0.95; }
+}
+
+/* Queen Icon */
+.queen-icon {
+  width: 68%;
+  height: 68%;
+  fill: var(--queen-color);
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+}
+
+.queen-icon.conflict {
+  fill: var(--conflict-color) !important;
+}
+
+/* Mark ✕ */
+.mark-x {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--mark-color);
+  pointer-events: none;
+}
+
+/* Conflict Line Overlay */
+.laser-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* In-Game Action Buttons */
+.board-actions-bar {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 520px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.game-btn {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  color: var(--text-white);
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.game-btn:hover:not(:disabled) {
+  background: var(--surface-secondary);
+  border-color: var(--border-highlight);
+  transform: translateY(-1px);
+}
+
+.game-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.game-btn.active {
+  background: #ffffff;
+  color: #0c0c0e;
+  border-color: #ffffff;
+}
+
+/* Toast Notification */
+.game-toast {
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-highlight);
+  color: var(--text-white);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: none;
+  text-align: center;
+}
+
+/* ==========================================================================
+   4. WIN MODAL (MONOCHROME)
+   ========================================================================== */
+
+.win-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.win-modal-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.win-card {
+  background: var(--surface);
+  border: 1px solid #ffffff;
+  border-radius: var(--radius-md);
+  padding: 32px 28px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.win-card h3 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+}
+
+.win-card p {
+  font-size: 0.9rem;
+  color: var(--text-grey);
+}
+
+.win-stats-row {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  justify-content: center;
+}
+
+.win-stat-box {
+  flex: 1;
+  background: var(--bg-main);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+}
+
+.win-stat-box .lbl {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.win-stat-box .val {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-top: 2px;
+}
+
+.win-buttons {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+/* ==========================================================================
+   5. QUIT SCREEN
+   ========================================================================== */
+
+.quit-card {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 40px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.quit-card h3 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-white);
+}
+
+.quit-card p {
+  font-size: 0.9rem;
+  color: var(--text-grey);
+  line-height: 1.5;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 440px) {
+  .board-container {
+    padding: 14px;
+  }
+  .coords-x {
+    left: 14px;
+    right: 14px;
+    top: 1px;
+    font-size: 0.62rem;
+  }
+  .coords-y {
+    top: 14px;
+    bottom: 14px;
+    left: 2px;
+    font-size: 0.62rem;
+  }
+  .menu-card {
+    padding: 28px 18px;
+  }
+  .quick-chips {
+    gap: 4px;
+  }
+  .chip-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}
